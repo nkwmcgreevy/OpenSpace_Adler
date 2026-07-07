@@ -3,7 +3,7 @@ local moon = asset.require("scene/solarsystem/planets/earth/moon/moon")
 local kernels = asset.require("./kernels")
 local coreKernels = asset.require("spice/core")
 local sun = asset.require("scene/solarsystem/sun/transforms")
-
+--this is a comment
 
 local models = asset.resource({
   Name = "Artemis Models",

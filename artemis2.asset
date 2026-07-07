@@ -1,0 +1,152 @@
+local earthTransforms = asset.require("scene/solarsystem/planets/earth/transforms")
+local moon = asset.require("scene/solarsystem/planets/earth/moon/moon")
+local kernels = asset.require("./kernels")
+local coreKernels = asset.require("spice/core")
+local sun = asset.require("scene/solarsystem/sun/transforms")
+
+
+local models = asset.resource({
+  Name = "Artemis Models",
+  Type = "HttpSynchronization",
+  Identifier = "artemis_1_models",
+  Version = 1
+})
+
+local ArtemisPosition = {
+  Identifier = "ArtemisIIPosition",
+  Parent = earthTransforms.EarthCenter.Identifier,
+  Transform = {
+    Translation = {
+      Type = "SpiceTranslation",
+      Target = kernels.ID.ArtemisII,
+      Observer = coreKernels.ID.Earth,
+      Frame = coreKernels.Frame.Galactic
+    }
+  },
+  GUI = {
+    Name = "Artemis-II Position",
+    Tag = {"Artemis II"},
+    Path = "/Solar System/Missions/Artemis II",
+    Focusable = true,
+    Hidden = false
+  }
+}
+
+local ArtemisEarthTrail = {
+  Identifier = "ArtemisIIEarthTrail",
+  Parent = earthTransforms.EarthCenter.Identifier,
+  Renderable = {
+    Type = "RenderableTrailTrajectory",
+    Translation = {
+      Type = "SpiceTranslation",
+      Target = kernels.ID.ArtemisII,
+      Observer = coreKernels.ID.Earth,
+      Frame = coreKernels.ID.Galactic
+    },
+    Color = { 0.2, 0.78, 0.635 },
+    Fade = 7.0,
+    StartTime = "2026-04-02 01:48:18.000",
+    EndTime = "2026-04-10 22:50:14.888",
+    SampleInterval = 60 -- Sample rate of once per minute
+  },
+  GUI = {
+    Name = "Artemis-II Earth Trail",
+    Path = "/Solar System/Missions/Artemis II/Trails",
+    Focusable = false,
+    Description = "Artemis-II trail relative to Earth",
+    Tag = {"Artemis II Earth Trail","Trail"}
+  }
+}
+
+local ArtemisMoonTrail = {
+  Identifier = "ArtemisIIMoonTrail",
+  Parent = moon.Identifier,
+  Renderable = {
+    Type = "RenderableTrailTrajectory",
+    Translation = {
+      Type = "SpiceTranslation",
+      Target = kernels.ID.ArtemisII,
+      Observer = coreKernels.ID.Moon,
+      Frame = coreKernels.Frame.Moon
+    },
+    Color = { 0.78, 0.43, 0.20 },
+    Fade = 7.0,
+    StartTime = "2026-04-02 01:48:18.000",
+    EndTime = "2026-04-10 22:50:14.888",
+    SampleInterval = 60 -- Sample rate of once per minute
+  },
+  GUI = {
+    Name = "Artemis-II Moon Trail",
+    Path = "/Solar System/Missions/Artemis II/Trails",
+    Focusable = false,
+    Description = "Artemis-II trail relative to the Moon",
+    Tag = {"Artemis II Moon Trail", "Trail"}
+  }
+}
+
+
+-- modified and added from Artemis I mission
+local ArtemisModel = {
+  Identifier = "ArtemisModel",
+  Parent = ArtemisPosition.Identifier,
+  ApproachFactor = 2700,
+  --Transform = {
+  --  Rotation = {
+   --   Type = "FixedRotation",
+  --    Attached = "ArtemisModel",
+  --    XAxis = { 1.0, 0.0, 0.0 },
+  --    XAxisOrthogonal = true,
+  --    YAxis = sun.SunCenter.Identifier,
+  --    YAxisInvert = true
+  --  }
+ -- },
+  Renderable = {
+    Type = "RenderableModel",
+    GeometryFile = models .. "artemis.glb",
+    LightSources = {
+      sun.LightSource
+    },
+    AmbientIntensity = 0.05
+  },
+  GUI = {
+    Name = "Orion (Artemis-1) Model",
+    Path = "/Solar System/Missions/Artemis",
+    Description = "Model of the Orion capsule for the Artemis mission"
+  }
+}
+
+
+asset.onInitialize(function()
+  openspace.addSceneGraphNode(ArtemisPosition)
+  openspace.addSceneGraphNode(ArtemisEarthTrail)
+  openspace.addSceneGraphNode(ArtemisMoonTrail)
+  openspace.addSceneGraphNode(ArtemisModel)
+end)
+
+asset.onDeinitialize(function()
+  openspace.removeSceneGraphNode(ArtemisMoonTrail)
+  openspace.removeSceneGraphNode(ArtemisEarthTrail)
+  openspace.removeSceneGraphNode(ArtemisPosition)
+  openspace.removeSceneGraphNode(ArtemisModel)
+
+end)
+
+asset.export(ArtemisPosition)
+asset.export(ArtemisEarthTrail)
+asset.export(ArtemisMoonTrail)
+asset.export(ArtemisModel)
+
+
+
+
+
+
+asset.meta = {
+  Name = "Artemis-2",
+  Description = "Pre Launch Trajectory Plan for Artemis II. Data from JPL Horizons.",
+  Author = "J. Hedberg / CCNY Planetarium; modified by N. Wenner / Adler Planetarium",
+  URL = "",
+  License = "MIT license"
+}
+
+
